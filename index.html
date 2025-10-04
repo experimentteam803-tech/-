@@ -1,171 +1,216 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Offers</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Roboto', sans-serif;
-            background-color: #ffffff; 
-        }
-        .top-bar {
-            background-color: #1f1f1f;
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .top-bar h1 {
-            margin: 0;
-            font-size: 20px;
-            font-weight: 500;
-        }
-        .top-bar .menu-icon {
-            font-size: 24px;
-            cursor: pointer;
-        }
-        .tasks-container {
-            padding: 20px 15px;
-        }
-        .info-text {
-            text-align: center;
-            color: #888;
-            margin-top: 30px;
-        }
-        .task-card {
-            display: flex;
-            align-items: center;
-            background-color: #F3EEFF;
-            border-radius: 16px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-        .task-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 10px;
-            margin-right: 15px;
-            object-fit: cover;
-            flex-shrink: 0;
-        }
-        .task-details {
-            flex-grow: 1;
-        }
-        .task-details .title {
-            font-size: 16px;
-            font-weight: 700;
-            color: #1f1f1f;
-            margin: 0 0 4px 0;
-        }
-        .task-details .description {
-            font-size: 14px;
-            color: #555;
-            margin: 0;
-            line-height: 1.4;
-        }
-        .get-btn {
-            background-color: #7B2CBF;
-            color: white;
-            padding: 10px 28px;
-            border: none;
-            border-radius: 20px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            text-decoration: none;
-            margin-left: 10px;
-            flex-shrink: 0;
-            transition: background-color 0.2s;
-        }
-        .get-btn:hover {
-            background-color: #6A25A8;
-        }
-        .settings-fab {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            width: 56px;
-            height: 56px;
-            background-color: #BDBDBD;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            cursor: pointer;
-        }
-        .settings-fab svg { width: 24px; height: 24px; fill: #424242; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redeem Code</title>
+
+  <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js"></script>
+
+  <style>
+    /* CSS Styles (Same as before) */
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      color: #fff;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.12);
+      padding: 35px 25px;
+      border-radius: 18px;
+      text-align: center;
+      box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.3);
+      width: 90%;
+      max-width: 420px;
+      display: none;
+      backdrop-filter: blur(8px);
+    }
+    h1 {
+      margin-bottom: 18px;
+      font-size: 26px;
+      font-weight: 700;
+    }
+    .code-box {
+      background: #fff;
+      color: #000;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 22px;
+      font-weight: bold;
+      margin: 18px 0;
+      letter-spacing: 1px;
+    }
+    .btn {
+      margin-top: 12px;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      width: 100%;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      margin-bottom: 5px;
+    }
+    .copy-btn {
+      background: #ffcc00; 
+      color: #000;
+    }
+    .copy-btn:hover {
+      background: #ffaa00;
+      transform: translateY(-2px);
+    }
+    .msg {
+      margin-top: 12px;
+      font-size: 14px;
+      color: #ffe600;
+      display: none;
+    }
+    .intro {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-size: 28px;
+      font-weight: bold;
+      flex-direction: column;
+      z-index: 1000;
+      animation: fadeOut 2s ease forwards;
+      animation-delay: 2s;
+    }
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div class="intro" id="introScreen">
+    🎉 Congratulations 🎉
+    <p style="font-size:18px; margin-top:10px;">You have unlocked your redeem code!</p>
+  </div>
 
-    <header class="top-bar">
-        <h1>Task Offers</h1>
-        <div class="menu-icon">&#8942;</div>
-    </header>
+  <div class="container" id="mainContent">
+    <h1>🎁 Your Redeem Code</h1>
+    <div class="code-box" id="redeemCode">Loading Code...</div>
+    <button class="btn copy-btn" onclick="copyAndTrack()">Copy Code</button> 
+    <p class="msg" id="copyMsg">✅ Code copied to clipboard and tracked!</p>
+  </div>
 
-    <div class="tasks-container" id="user-task-list">
-        <p class="info-text" id="info-message">Loading offers...</p>
-    </div>
+  <textarea id="hiddenInput" style="position:absolute; left:-9999px;"></textarea>
+
+  <script type="module">
+    // 3.1. Modular Firebase Imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+    import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js";
     
-    <div class="settings-fab">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61-.25-1.17.59-1.69-.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19-.15-.24.42-.12-.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l-.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
-    </div>
+    // 3.2. NEW Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0vsW1fivhOVec40Pif8Z_mDbnLH9vV80",
+      authDomain: "gift-code-wellcome.firebaseapp.com",
+      projectId: "gift-code-wellcome",
+      storageBucket: "gift-code-wellcome.firebasestorage.app",
+      messagingSenderId: "463243795581",
+      appId: "1:463243795581:web:ac978a50a2798590e7a514",
+      measurementId: "G-Y20QR716LV"
+    };
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    // Initialize Firebase and Database
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const analytics = getAnalytics(app);
+    
+    // 3.3. Database Tracking Function (Updated for Modular SDK)
+    async function trackAndSaveCode(code) {
+      const uniqueKey = Date.now(); // Simple unique ID
+      const dbRef = ref(database); // Database reference
+      
+      try {
+          await set(ref(database, 'redeem_code_clicks/' + uniqueKey), {
+              code: code,
+              timestamp: new Date().toISOString(),
+              referrer: document.referrer || 'direct'
+          });
+          console.log("Code tracked successfully in Firebase!");
+          // Optional: Log custom event to Analytics
+          logEvent(analytics, 'code_copied', { code: code, redirect_url: "https://otieu.com/4/9966942" });
+      } catch (error) {
+          console.error("Firebase tracking failed:", error);
+      }
+    }
 
-    <script>
+    // 3.4. Load Active Code Function (Updated for Modular SDK)
+    async function loadActiveCode() {
+        const codeDisplay = document.getElementById("redeemCode");
+        const dbRef = ref(database); 
+        
         try {
-            const firebaseConfig = { apiKey: "AIzaSyC4LpwqmIzFVwLMp8w9ibyfmOq2Dc-JBkc", authDomain: "ohaadslocker.firebaseapp.com", projectId: "ohaadslocker", storageBucket: "ohaadslocker.appspot.com", messagingSenderId: "480353270472", appId: "1:480353270472:web:34d9e206c0a4d8c49503fd" };
+            // 'active_gift_code/code' path se value fetch karna
+            const snapshot = await get(child(dbRef, 'active_gift_code/'));
             
-            firebase.initializeApp(firebaseConfig);
-            console.log("Firebase initialized successfully.");
-
-            const db = firebase.firestore();
-            const tasksCollection = db.collection('tasks');
-            const userTaskList = document.getElementById('user-task-list');
-
-            console.log("Attempting to fetch tasks...");
-            tasksCollection.onSnapshot(snapshot => {
-                console.log(`Snapshot received. Found ${snapshot.docs.length} tasks.`);
-                userTaskList.innerHTML = '';
-                
-                if (snapshot.empty) {
-                    userTaskList.innerHTML = '<p class="info-text">No tasks available right now.</p>';
-                    return;
-                }
-                
-                snapshot.forEach(doc => {
-                    const task = doc.data();
-                    const taskCard = document.createElement('div');
-                    taskCard.className = 'task-card';
-                    taskCard.innerHTML = `
-                        <img src="${task.iconUrl}" alt="Icon" class="task-icon">
-                        <div class="task-details">
-                            <p class="title">${task.name}</p>
-                            <p class="description">${task.description}</p>
-                        </div>
-                        <a href="${task.link}" target="_blank" rel="noopener noreferrer" class="get-btn">Get</a>
-                    `;
-                    userTaskList.appendChild(taskCard);
-                });
-            }, error => {
-                // यह Error सबसे महत्वपूर्ण है
-                console.error("FIREBASE ONSNAPSHOT ERROR:", error);
-                userTaskList.innerHTML = `<p class="info-text">Error: Could not load offers. (${error.message})</p>`;
-            });
-
-        } catch (e) {
-            console.error("SCRIPT ERROR:", e);
-            document.getElementById('user-task-list').innerHTML = `<p class="info-text">A critical error occurred on the page.</p>`;
+            if (snapshot.exists() && snapshot.val().code) {
+                const activeCode = snapshot.val().code;
+                codeDisplay.textContent = activeCode;
+            } else {
+                codeDisplay.textContent = 'ERROR! Set Code in Admin Panel.';
+            }
+        } catch (error) {
+            codeDisplay.textContent = 'ERROR LOADING CODE';
+            console.error("Error fetching active code:", error);
         }
-    </script>
+    }
+
+    // 3.5. Main Action Function (Global function access ke liye ise window object mein rakha gaya hai)
+    window.copyAndTrack = async function() {
+      const code = document.getElementById("redeemCode").innerText;
+      const hiddenInput = document.getElementById("hiddenInput");
+      
+      // 1. Code Copy Logic
+      hiddenInput.value = code;
+      hiddenInput.select();
+      hiddenInput.setSelectionRange(0, 99999);
+      document.execCommand("copy");
+      
+      // Show confirmation message
+      document.getElementById("copyMsg").style.display = "block";
+      setTimeout(() => {
+        document.getElementById("copyMsg").style.display = "none";
+      }, 2000);
+
+      // 2. Track in Firebase 
+      await trackAndSaveCode(code); 
+
+      // 3. Redirect to the link
+      setTimeout(() => {
+        window.location.href = "https://otieu.com/4/9966942";
+      }, 500); 
+    };
+
+    // 3.6. Initialization and Intro Screen Logic
+    setTimeout(() => {
+      document.getElementById("introScreen").style.opacity = 0;
+      document.getElementById("introScreen").style.visibility = 'hidden';
+      document.getElementById("mainContent").style.display = "block";
+      
+      // Active code load karna
+      loadActiveCode(); 
+    }, 2500);
+  </script>
 </body>
 </html>
